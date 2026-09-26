@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["src/bin/cards.tsx"],
+  "project": ["src/**/*.{ts,tsx}", "test/**/*.ts"],
+  "rules": {
+    "files": "error",
+    "dependencies": "error",
+    "unlisted": "error",
+    "unresolved": "error",
+    "exports": "error",
+    "types": "error",
+    "enumMembers": "warn",
+    "duplicates": "warn"
+  },
+  "includeEntryExports": false
+}
