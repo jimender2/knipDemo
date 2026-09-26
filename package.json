@@ -13,7 +13,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "dev": "tsx src/bin/cards.ts",
+    "dev": "tsx src/bin/cards.tsx",
     "serve": "tsx src/bin/serve.ts",
     "start": "node dist/bin/cards.js",
     "typecheck": "tsc --noEmit",
