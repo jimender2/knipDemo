@@ -1,0 +1,41 @@
+{
+  "name": "knip-example-cards",
+  "version": "1.0.0",
+  "description": "A card-based todo app (HTTP API + Ink TUI) that doubles as a knip fixture",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "cards": "./dist/bin/cards.js",
+    "cards-serve": "./dist/bin/serve.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsx src/bin/cards.ts",
+    "serve": "tsx src/bin/serve.ts",
+    "start": "node dist/bin/cards.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "knip": "knip"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.3.0",
+    "fastify": "^5.12.5",
+    "ink": "^7.1.1",
+    "kleur": "^4.1.5",
+    "react": "^19.3.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "@types/react": "^19.3.0",
+    "knip": "^6.38.0",
+    "react-devtools-core": "^8.0.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.11"
+  }
+}
