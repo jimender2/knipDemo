@@ -1,6 +1,5 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "entry": ["src/bin/cards.tsx"],
   "project": ["src/**/*.{ts,tsx}", "test/**/*.ts"],
   "rules": {
     "files": "error",
