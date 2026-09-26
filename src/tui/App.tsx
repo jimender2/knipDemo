@@ -2,7 +2,13 @@ import { Box, Text, useApp, useInput } from 'ink';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Card } from '../core/card.js';
 import { STATUSES, type Status } from '../core/card.js';
-import { allTags, computeStats, filterCards, sortCards, type CardFilter } from '../core/selectors.js';
+import {
+  allTags,
+  computeStats,
+  filterCards,
+  sortCards,
+  type CardFilter,
+} from '../core/selectors.js';
 import { pluralize } from '../core/format.js';
 import { ApiError, CardsClient } from './client.js';
 import { CardView } from './CardView.js';
@@ -123,8 +129,8 @@ export function App({ client, layout = CardLayout.GRID }: AppProps) {
         <Text>{banner}</Text>
         <Text dimColor>
           {'  '}
-          {pluralize(stats.total, 'card')} · {stats.todo} todo · {stats.doing} doing ·{' '}
-          {stats.done} done
+          {pluralize(stats.total, 'card')} · {stats.todo} todo · {stats.doing} doing · {stats.done}{' '}
+          done
           {stats.overdue > 0 ? paint.danger(` · ${stats.overdue} overdue`) : ''}
         </Text>
       </Box>
@@ -133,7 +139,9 @@ export function App({ client, layout = CardLayout.GRID }: AppProps) {
         <Text color={statusFilter === 'all' ? colors.highlight : colors.muted}>
           status: {statusFilter}
         </Text>
-        <Text dimColor>{'  '}tag: {tagFilter ?? 'all'}</Text>
+        <Text dimColor>
+          {'  '}tag: {tagFilter ?? 'all'}
+        </Text>
       </Box>
 
       {error !== null ? (
@@ -144,20 +152,13 @@ export function App({ client, layout = CardLayout.GRID }: AppProps) {
 
       <Box flexDirection="column" marginTop={1}>
         {visible.length === 0 ? (
-          <Text dimColor>  no cards match — press n to add one</Text>
+          <Text dimColor> no cards match — press n to add one</Text>
         ) : (
           chunk(visible, columns).map((row, rowIndex) => (
             <Box key={rowIndex} gap={1}>
               {row.map((card) => {
                 const index = visible.indexOf(card);
-                return (
-                  <CardView
-                    key={card.id}
-                    card={card}
-                    selected={index === cursor}
-                    now={now}
-                  />
-                );
+                return <CardView key={card.id} card={card} selected={index === cursor} now={now} />;
               })}
             </Box>
           ))

@@ -41,11 +41,7 @@ describe('loadCards / saveCards', () => {
 
   it('drops individual invalid entries but keeps valid ones', async () => {
     const good = createCard({ title: 'keeper' });
-    await writeFile(
-      path,
-      JSON.stringify([good, { id: 'broken' }, null, 42]),
-      'utf8',
-    );
+    await writeFile(path, JSON.stringify([good, { id: 'broken' }, null, 42]), 'utf8');
     expect(await loadCards(path)).toEqual([good]);
   });
 });

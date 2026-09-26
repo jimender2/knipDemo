@@ -1,12 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createCard, type Card } from '../src/core/card.js';
-import {
-  allTags,
-  computeStats,
-  filterCards,
-  isOverdue,
-  sortCards,
-} from '../src/core/selectors.js';
+import { allTags, computeStats, filterCards, isOverdue, sortCards } from '../src/core/selectors.js';
 
 const NOW = new Date('2026-06-15T12:00:00.000Z');
 

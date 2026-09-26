@@ -1,11 +1,5 @@
 import { EventEmitter } from 'node:events';
-import {
-  applyUpdate,
-  createCard,
-  toggleCard,
-  type Card,
-  type CardDraft,
-} from './card.js';
+import { applyUpdate, createCard, toggleCard, type Card, type CardDraft } from './card.js';
 
 export class CardNotFoundError extends Error {
   constructor(readonly id: string) {

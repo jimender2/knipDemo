@@ -21,11 +21,7 @@ async function req(method: Method, url: string, payload?: Record<string, unknown
   return app.inject(options);
 }
 
-async function body<T>(
-  method: Method,
-  url: string,
-  payload?: Record<string, unknown>,
-): Promise<T> {
+async function body<T>(method: Method, url: string, payload?: Record<string, unknown>): Promise<T> {
   const response = await req(method, url, payload);
   return response.json() as T;
 }

@@ -1,12 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createCard } from '../src/core/card.js';
-import {
-  cardAccent,
-  formatDue,
-  pluralize,
-  priorityGlyph,
-  truncate,
-} from '../src/core/format.js';
+import { cardAccent, formatDue, pluralize, priorityGlyph, truncate } from '../src/core/format.js';
 
 const NOW = new Date('2026-06-15T12:00:00.000Z');
 

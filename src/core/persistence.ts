@@ -19,11 +19,18 @@ export async function loadCards(path: string = DEFAULT_DATA_PATH): Promise<Card[
   }
 }
 
-export async function saveCards(cards: readonly Card[], path: string = DEFAULT_DATA_PATH): Promise<void> {
+export async function saveCards(
+  cards: readonly Card[],
+  path: string = DEFAULT_DATA_PATH,
+): Promise<void> {
   await mkdir(dirname(path), { recursive: true });
   await writeFile(path, `${JSON.stringify(cards, null, 2)}\n`, 'utf8');
 }
 
 function isNotFound(error: unknown): boolean {
-  return typeof error === 'object' && error !== null && (error as NodeJS.ErrnoException).code === 'ENOENT';
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    (error as NodeJS.ErrnoException).code === 'ENOENT'
+  );
 }

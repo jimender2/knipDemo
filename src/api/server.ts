@@ -16,9 +16,7 @@ export async function buildStore(options: ServerOptions = {}): Promise<CardStore
   return new CardStore(initial);
 }
 
-export async function buildServer(
-  options: ServerOptions = {},
-): Promise<FastifyInstance> {
+export async function buildServer(options: ServerOptions = {}): Promise<FastifyInstance> {
   const store = await buildStore(options);
   const app = Fastify({ logger: options.logger ?? false });
 
