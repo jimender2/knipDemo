@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { cardSchema, type Card } from '../core/card.js';
+import { cardSchema, type Card, type CardDraft } from '../core/card.js';
 import type { CardStats } from '../core/selectors.js';
 
 const cardsResponseSchema = z.object({ cards: z.array(cardSchema) });
@@ -28,7 +28,13 @@ export class ApiError extends Error {
 async function request<T>(url: string, schema: z.ZodType<T>, init?: RequestInit): Promise<T> {
   const response = await fetch(url, {
     ...init,
-    headers: { 'content-type': 'application/json', ...init?.headers },
+    // Only claim a JSON body when there actually is one. Fastify rejects an
+    // empty payload with FST_ERR_CTP_EMPTY_JSON_BODY if content-type is set,
+    // which turned every bodyless DELETE and POST into a 500.
+    headers: {
+      ...(init?.body === undefined ? {} : { 'content-type': 'application/json' }),
+      ...init?.headers,
+    },
   });
 
   if (!response.ok) {
@@ -63,10 +69,10 @@ export class CardsClient {
     }).then((r) => r.card);
   }
 
-  cycleStatus(id: string, status: 'todo' | 'doing' | 'done'): Promise<Card> {
+  update(id: string, patch: Partial<CardDraft>): Promise<Card> {
     return request(`${this.baseUrl}/api/cards/${id}`, cardResponseSchema, {
       method: 'PATCH',
-      body: JSON.stringify({ status }),
+      body: JSON.stringify(patch),
     }).then((r) => r.card);
   }
 

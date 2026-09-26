@@ -1,7 +1,7 @@
 import { Box, Text, useApp, useInput } from 'ink';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Card } from '../core/card.js';
-import { STATUSES, type Status } from '../core/card.js';
+import { PRIORITIES, STATUSES, type Status } from '../core/card.js';
 import {
   allTags,
   computeStats,
@@ -15,6 +15,12 @@ import { CardView } from './CardView.js';
 import { CardLayout, colors, GRID_COLUMNS, keyHint, paint, banner } from './theme.js';
 
 const COLUMNS = GRID_COLUMNS;
+const TITLE_LIMIT = 120;
+
+interface Editing {
+  readonly id: string;
+  readonly title: string;
+}
 
 export interface AppProps {
   client: CardsClient;
@@ -30,6 +36,7 @@ export function App({ client, layout = CardLayout.GRID }: AppProps) {
   const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [editing, setEditing] = useState<Editing | null>(null);
   const now = useMemo(() => new Date(), [cards.length]);
 
   const refresh = useCallback(async () => {
@@ -60,10 +67,18 @@ export function App({ client, layout = CardLayout.GRID }: AppProps) {
   const tags = useMemo(() => allTags(cards), [cards]);
   const active = visible[cursor];
 
+  // Deleting or filtering can shrink the list out from under the cursor, which
+  // would leave `active` undefined and silently swallow every card key until
+  // you moved back up. Keep the cursor inside the list instead.
+  useEffect(() => {
+    setCursor((c) => (visible.length === 0 ? 0 : Math.min(c, visible.length - 1)));
+  }, [visible.length]);
+
   const act = useCallback(
     async (fn: () => Promise<unknown>) => {
       try {
         await fn();
+        setError(null);
         await refresh();
       } catch (cause) {
         setError(cause instanceof ApiError ? `API ${cause.status}` : 'request failed');
@@ -73,6 +88,34 @@ export function App({ client, layout = CardLayout.GRID }: AppProps) {
   );
 
   useInput((input, key) => {
+    // While editing, every key belongs to the text buffer. Swallowing the
+    // action keys here is what stops a stray `d` from deleting the very card
+    // you are renaming.
+    if (editing !== null) {
+      if (key.escape) {
+        setEditing(null);
+        return;
+      }
+      if (key.return) {
+        const { id, title } = editing;
+        const trimmed = title.trim();
+        setEditing(null);
+        if (trimmed !== '') void act(() => client.update(id, { title: trimmed }));
+        return;
+      }
+      if (key.backspace || key.delete) {
+        setEditing((e) => (e === null ? null : { ...e, title: e.title.slice(0, -1) }));
+        return;
+      }
+      if (key.upArrow || key.downArrow || key.tab) return;
+      if (input !== '' && !key.ctrl && !key.meta) {
+        setEditing((e) =>
+          e === null || e.title.length >= TITLE_LIMIT ? e : { ...e, title: e.title + input },
+        );
+      }
+      return;
+    }
+
     if (input === 'q' || (key.ctrl && input === 'c')) {
       exit();
       return;
@@ -91,6 +134,24 @@ export function App({ client, layout = CardLayout.GRID }: AppProps) {
     }
     if (input === ' ') {
       if (active) void act(() => client.toggle(active.id));
+      return;
+    }
+    if (input === 'e') {
+      if (active) setEditing({ id: active.id, title: active.title });
+      return;
+    }
+    if (input === 's') {
+      if (active) {
+        const next = STATUSES[(STATUSES.indexOf(active.status) + 1) % STATUSES.length]!;
+        void act(() => client.update(active.id, { status: next }));
+      }
+      return;
+    }
+    if (input === 'p') {
+      if (active) {
+        const next = PRIORITIES[(PRIORITIES.indexOf(active.priority) + 1) % PRIORITIES.length]!;
+        void act(() => client.update(active.id, { priority: next }));
+      }
       return;
     }
     if (input === 'd') {
@@ -165,10 +226,22 @@ export function App({ client, layout = CardLayout.GRID }: AppProps) {
         )}
       </Box>
 
+      {editing !== null ? (
+        <Box marginTop={1}>
+          <Text color={colors.accent}>edit title: </Text>
+          <Text>{editing.title}</Text>
+          <Text inverse> </Text>
+          <Text dimColor> enter save · esc cancel</Text>
+        </Box>
+      ) : null}
+
       <Box marginTop={1}>
         <Text dimColor>
           {keyHint([
             ['↑↓', 'move'],
+            ['e', 'edit'],
+            ['s', 'status'],
+            ['p', 'priority'],
             ['space', 'toggle'],
             ['d', 'delete'],
             ['n', 'new'],
