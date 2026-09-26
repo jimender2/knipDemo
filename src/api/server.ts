@@ -32,6 +32,17 @@ export async function buildServer(options: ServerOptions = {}): Promise<FastifyI
         })),
       });
     }
+    // A malformed request is the caller's fault, not ours. Fastify attaches a
+    // 4xx statusCode to things like FST_ERR_CTP_EMPTY_JSON_BODY; without this
+    // branch they all surfaced as 500 internal_error and were impossible to
+    // tell apart from a genuine server fault.
+    const status = statusOf(error);
+    if (status !== undefined && status >= 400 && status < 500) {
+      return reply.code(status).send({
+        error: 'invalid_request',
+        message: error instanceof Error ? error.message : 'request rejected',
+      });
+    }
     log.error(`${request.method} ${request.url} failed`, error);
     return reply.code(500).send({ error: 'internal_error' });
   });
@@ -47,4 +58,10 @@ export async function buildServer(options: ServerOptions = {}): Promise<FastifyI
   }
 
   return app;
+}
+
+function statusOf(error: unknown): number | undefined {
+  if (typeof error !== 'object' || error === null) return undefined;
+  const { statusCode } = error as { statusCode?: unknown };
+  return typeof statusCode === 'number' ? statusCode : undefined;
 }
