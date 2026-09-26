@@ -53,16 +53,23 @@ well-formed cards.
 
 ## TUI keys
 
-| Key               | Action                   |
-| ----------------- | ------------------------ |
-| `↑` `↓` / `k` `j` | move the selection       |
-| `space`           | toggle done / todo       |
-| `d`               | delete the selected card |
-| `n`               | add a card               |
-| `f`               | cycle the status filter  |
-| `t`               | cycle the tag filter     |
-| `r`               | reload from the API      |
-| `q` / `ctrl+c`    | quit                     |
+| Key               | Action                           |
+| ----------------- | -------------------------------- |
+| `↑` `↓` / `k` `j` | move the selection               |
+| `e`               | edit the title                   |
+| `s`               | cycle status todo → doing → done |
+| `p`               | cycle priority                   |
+| `space`           | toggle done / todo               |
+| `d`               | delete the selected card         |
+| `n`               | add a card                       |
+| `f`               | cycle the status filter          |
+| `t`               | cycle the tag filter             |
+| `r`               | reload from the API              |
+| `q` / `ctrl+c`    | quit                             |
+
+`e` opens an inline prompt seeded with the current title. `enter` saves, `esc` cancels, and
+while the prompt is open every other key goes to the text buffer — so you can type `d` into a
+title without deleting the card.
 
 Cards render in a two-column grid. The selected card gets a rounded border, and its accent
 colour encodes state: green when done, red when overdue, magenta when urgent, yellow when
@@ -129,9 +136,8 @@ src/util/fuzzy.ts
 Unused dependencies (2)      chalk, lodash
 Unused devDependencies (1)   eslint
 
-Unused exports (6)
+Unused exports (5)
   buildStore           src/api/server.ts:14
-  PRIORITIES           src/core/card.ts:4
   tagSchema            src/core/card.ts:10
   CardValidationError  src/core/card.ts:39
   describeCard         src/core/format.ts:52
@@ -155,8 +161,9 @@ Every one of these is intentional:
   knip counts a devDependency referenced by a package.json script as used. The config
   file on its own does not count.)
 - **The unused exports and types** — realistic over-exports: helpers written and exported
-  ahead of their call sites. `PRIORITIES` and `CardValidationError` in particular are
-  plausible API surface that nothing consumes yet.
+  ahead of their call sites. `tagSchema` and `CardValidationError` in particular are
+  plausible API surface that nothing consumes yet. (`PRIORITIES` was in this list until the
+  TUI grew a `p` key to cycle priority, at which point it was genuinely used.)
 
 `knip.json` sets explicit project globs and rules so the report stays stable as the app
 grows, and `includeEntryExports: false` keeps entry-file exports out of the report. It
