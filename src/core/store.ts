@@ -14,6 +14,8 @@ export class CardNotFoundError extends Error {
   }
 }
 
+export type StoreEvent = 'change';
+
 export class CardStore extends EventEmitter {
   #cards: Card[] = [];
 

@@ -49,6 +49,12 @@ export function truncate(text: string, width: number): string {
   return `${text.slice(0, width - 1)}…`;
 }
 
+export function describeCard(card: Card): string {
+  const tags = card.tags.length > 0 ? ` [${card.tags.join(', ')}]` : '';
+  const due = card.due === null ? '' : ` due ${card.due}`;
+  return `${priorityGlyph(card.priority)} ${card.title}${tags}${due}`;
+}
+
 export function pluralize(count: number, singular: string, plural = `${singular}s`): string {
   return `${count} ${count === 1 ? singular : plural}`;
 }

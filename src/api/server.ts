@@ -11,7 +11,7 @@ export interface ServerOptions {
   persist?: boolean;
 }
 
-async function buildStore(options: ServerOptions = {}): Promise<CardStore> {
+export async function buildStore(options: ServerOptions = {}): Promise<CardStore> {
   const initial = options.persist === false ? [] : await loadCards();
   return new CardStore(initial);
 }

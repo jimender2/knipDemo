@@ -1,13 +1,13 @@
 import { z } from 'zod';
 import { newId } from '../util/ids.js';
 
-const PRIORITIES = ['low', 'normal', 'high', 'urgent'] as const;
+export const PRIORITIES = ['low', 'normal', 'high', 'urgent'] as const;
 export const STATUSES = ['todo', 'doing', 'done'] as const;
 
 export const prioritySchema = z.enum(PRIORITIES);
 export const statusSchema = z.enum(STATUSES);
 
-const tagSchema = z
+export const tagSchema = z
   .string()
   .min(1)
   .max(24)
@@ -35,6 +35,16 @@ export const cardDraftSchema = cardSchema
   .partial();
 
 export type CardDraft = z.infer<typeof cardDraftSchema>;
+
+export class CardValidationError extends Error {
+  readonly issues: z.core.$ZodIssue[];
+
+  constructor(issues: z.core.$ZodIssue[]) {
+    super('Card is not valid');
+    this.name = 'CardValidationError';
+    this.issues = issues;
+  }
+}
 
 export function createCard(draft: CardDraft = {}): Card {
   const now = new Date().toISOString();

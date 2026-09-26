@@ -64,3 +64,5 @@ export function CardView({ card, selected, now }: CardViewProps) {
     </Box>
   );
 }
+
+export type { ColorName };

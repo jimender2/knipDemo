@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { cardSchema, type Card } from './card.js';
 
-const DEFAULT_DATA_PATH = resolve(process.cwd(), 'data/cards.json');
+export const DEFAULT_DATA_PATH = resolve(process.cwd(), 'data/cards.json');
 
 export async function loadCards(path: string = DEFAULT_DATA_PATH): Promise<Card[]> {
   try {
